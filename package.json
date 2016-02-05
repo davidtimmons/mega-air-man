@@ -1,0 +1,14 @@
+{
+  "name": "mega-air-man",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fight as Air Man in this Mega Man game written in Elm.",
+  "license": "BSD3",
+  "author": "David Timmons (http://david.timmons.io/)",
+  "scripts": {
+    "build": ""
+  },
+  "devDependencies": {
+    "sprity": "^1.0.8"
+  }
+}

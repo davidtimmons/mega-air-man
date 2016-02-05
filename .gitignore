@@ -1,3 +1,8 @@
+# Elm generated files:
+elm-stuff/
+repl-temp-*
+
+# Other files:
 node_modules/
 build/
 .*.sw*
