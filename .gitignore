@@ -1,7 +1,6 @@
 # Elm generated files:
-elm-stuff/
-repl-temp-*
-elm.js
+src/elm-stuff/
+src/elm.js
 
 # Other files:
 node_modules/

@@ -1,0 +1,193 @@
+.icon {
+  background-image: url('../img/sprites.png');
+}
+.icon-mm2-airman-arena1 {
+  background-position: -0px -0px;
+  width: 647px;
+  height: 648px;
+}
+.icon-mm2-airman-arena2 {
+  background-position: -647px -0px;
+  width: 647px;
+  height: 648px;
+}
+.icon-mm2-airman-arena3 {
+  background-position: -1294px -0px;
+  width: 647px;
+  height: 648px;
+}
+.icon-mm2-airman-jump {
+  background-position: -0px -648px;
+  width: 100px;
+  height: 83px;
+}
+.icon-mm2-airman-shoot1 {
+  background-position: -203px -648px;
+  width: 100px;
+  height: 78px;
+}
+.icon-mm2-airman-shoot2 {
+  background-position: -303px -648px;
+  width: 100px;
+  height: 78px;
+}
+.icon-mm2-airman-shoot3 {
+  background-position: -100px -648px;
+  width: 103px;
+  height: 78px;
+}
+.icon-mm2-airman-stand {
+  background-position: -0px -731px;
+  width: 88px;
+  height: 83px;
+}
+.icon-mm2-airman-tornado1 {
+  background-position: -626px -731px;
+  width: 43px;
+  height: 48px;
+}
+.icon-mm2-airman-tornado2 {
+  background-position: -669px -731px;
+  width: 38px;
+  height: 48px;
+}
+.icon-mm2-airman-tornado3 {
+  background-position: -707px -731px;
+  width: 38px;
+  height: 46px;
+}
+.icon-mm2-fx-damage {
+  background-position: -388px -731px;
+  width: 68px;
+  height: 68px;
+}
+.icon-mm2-fx-explode1 {
+  background-position: -829px -648px;
+  width: 48px;
+  height: 48px;
+}
+.icon-mm2-fx-explode2 {
+  background-position: -745px -731px;
+  width: 38px;
+  height: 38px;
+}
+.icon-mm2-fx-explode3 {
+  background-position: -939px -648px;
+  width: 33px;
+  height: 33px;
+}
+.icon-mm2-fx-explode4 {
+  background-position: -998px -648px;
+  width: 18px;
+  height: 18px;
+}
+.icon-mm2-megaman-bullet {
+  background-position: -972px -648px;
+  width: 26px;
+  height: 21px;
+}
+.icon-mm2-megaman-climb1 {
+  background-position: -27px -894px;
+  width: 48px;
+  height: 80px;
+}
+.icon-mm2-megaman-climb2 {
+  background-position: -781px -648px;
+  width: 48px;
+  height: 63px;
+}
+.icon-mm2-megaman-hit {
+  background-position: -242px -731px;
+  width: 73px;
+  height: 78px;
+}
+.icon-mm2-megaman-jump {
+  background-position: -169px -731px;
+  width: 73px;
+  height: 83px;
+}
+.icon-mm2-megaman-run1 {
+  background-position: -652px -648px;
+  width: 69px;
+  height: 63px;
+}
+.icon-mm2-megaman-run2 {
+  background-position: -578px -731px;
+  width: 48px;
+  height: 68px;
+}
+.icon-mm2-megaman-run3 {
+  background-position: -721px -648px;
+  width: 60px;
+  height: 63px;
+}
+.icon-mm2-megaman-shoot-climb {
+  background-position: -0px -814px;
+  width: 68px;
+  height: 80px;
+}
+.icon-mm2-megaman-shoot-jump {
+  background-position: -88px -731px;
+  width: 81px;
+  height: 83px;
+}
+.icon-mm2-megaman-shoot-run1 {
+  background-position: -572px -648px;
+  width: 80px;
+  height: 63px;
+}
+.icon-mm2-megaman-shoot-run2 {
+  background-position: -315px -731px;
+  width: 73px;
+  height: 68px;
+}
+.icon-mm2-megaman-shoot-run3 {
+  background-position: -489px -648px;
+  width: 83px;
+  height: 63px;
+}
+.icon-mm2-megaman-shoot-stand {
+  background-position: -403px -648px;
+  width: 86px;
+  height: 68px;
+}
+.icon-mm2-megaman-stand1 {
+  background-position: -456px -731px;
+  width: 61px;
+  height: 68px;
+}
+.icon-mm2-megaman-stand2 {
+  background-position: -517px -731px;
+  width: 61px;
+  height: 68px;
+}
+.icon-mm2-megaman-teleport1 {
+  background-position: -877px -648px;
+  width: 62px;
+  height: 34px;
+}
+.icon-mm2-megaman-teleport2 {
+  background-position: -68px -814px;
+  width: 61px;
+  height: 74px;
+}
+.icon-mm2-megaman-teleport3 {
+  background-position: -0px -1042px;
+  width: 24px;
+  height: 89px;
+}
+.icon-mm2-ui-health-airman {
+  background-position: -1016px -648px;
+  width: 27px;
+  height: 11px;
+}
+.icon-mm2-ui-healthbar {
+  background-position: -0px -894px;
+  width: 27px;
+  height: 148px;
+}
+.icon-mm2-ui-health-megaman {
+  background-position: -1043px -648px;
+  width: 27px;
+  height: 11px;
+}
