@@ -1,12 +1,15 @@
 module Arena
-  ( init
+  ( Model
+  , init
   , update
   , view
   ) where
 
-import Html exposing (..)
+import Effects exposing (Effects)
+import Html exposing (div, Html)
 import Html.Attributes exposing (classList, title)
-import Signal
+import Signal exposing (Signal)
+import Time
 
 
 -----------
@@ -27,13 +30,16 @@ type alias Model =
   }
 
 
-init : Model
+init : (Model, Effects a)
 init =
-  { current = "icon-mm2-airman-arena1"
-  , f1 = "icon-mm2-airman-arena1"
-  , f2 = "icon-mm2-airman-arena2"
-  , f3 = "icon-mm2-airman-arena3"
-  }
+  (
+    { current = "icon-mm2-airman-arena1"
+    , f1 = "icon-mm2-airman-arena1"
+    , f2 = "icon-mm2-airman-arena2"
+    , f3 = "icon-mm2-airman-arena3"
+    },
+    Effects.none
+  )
 
 
 ------------
@@ -44,18 +50,22 @@ type Action =
   CycleFrame Int
 
 
-update : Action -> Model -> Model
+update : Action -> Model -> (Model, Effects a)
 update action model =
-  case action of
-    CycleFrame 1 ->
-      { model | current = model.f2 }
+  let
+    newModel =
+      case action of
+        CycleFrame 1 ->
+          { model | current = model.f2 }
 
-    CycleFrame 2 ->
-      { model | current = model.f3 }
+        CycleFrame 2 ->
+          { model | current = model.f3 }
 
-    CycleFrame _ ->
-      { model | current = model.f1 }
+        CycleFrame _ ->
+          { model | current = model.f1 }
 
+  in
+    (newModel, Effects.none)
 
 ----------
 -- VIEW --
@@ -73,3 +83,9 @@ view address model =
       title "Air Man Arena"
     ]
     []
+
+
+animationSpeed : Signal Float
+animationSpeed =
+  Signal.map (\t -> t/1) (Time.fps 30)
+  |> Signal.map (Debug.watch "animationSpeed")
