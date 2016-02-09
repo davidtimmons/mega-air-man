@@ -7,11 +7,11 @@ module Arena
   ) where
 
 -- <MegaAirMan> Modules
-import Utilities
+import Shared exposing (Frame)
 
 -- Elm Modules
 import Effects exposing (Effects)
-import Html exposing (div, Html)
+import Html exposing (Html, div)
 import Html.Attributes exposing (classList, title)
 import Signal exposing (Signal)
 import Time
@@ -36,7 +36,7 @@ import Time
 -- MODEL --
 -----------
 
-{-| The model holds frame information associated with the background animation.
+{-| This model holds all animation state associated with the background sprite.
 -}
 type alias Model =
   { currentFrameNumber : Int
@@ -48,29 +48,18 @@ type alias Model =
   }
 
 
-{-| This data type captures the CSS class associated with the
-current animation frame.
-
-    Frame "icon-mm2-airman-arena1"
--}
-type alias Frame =
-  String
-
-
 {-| Set model defaults to include all animation frames in play order.
 -}
 init : (Model, Effects a)
 init =
-  (
-    { currentFrameNumber = 1
-    , currentFrame = "icon-mm2-airman-arena1"
-    , f1 = "icon-mm2-airman-arena1"
-    , f2 = "icon-mm2-airman-arena2"
-    , f3 = "icon-mm2-airman-arena3"
-    , f4 = "icon-mm2-airman-arena2"
-    }
-    , Effects.none
-  )
+  Shared.noFx <|
+  { currentFrameNumber = 1
+  , currentFrame = "icon-mm2-airman-arena1"
+  , f1 = "icon-mm2-airman-arena1"
+  , f2 = "icon-mm2-airman-arena2"
+  , f3 = "icon-mm2-airman-arena3"
+  , f4 = "icon-mm2-airman-arena2"
+  }
 
 
 ------------
@@ -88,21 +77,21 @@ to animation frames in the sprite sheet.
 -}
 update : Action -> Model -> (Model, Effects a)
 update action model =
-  Utilities.noFx <|
+  Shared.noFx <|
   case action of
     NextFrame ->
       let
         nextNumber = 1 + (model.currentFrameNumber % 4)
         nextFrame =
           case nextNumber of
-            2 ->
-              model.f2
+            4 ->
+              model.f4
 
             3 ->
               model.f3
 
-            4 ->
-              model.f4
+            2 ->
+              model.f2
 
             _ ->
               model.f1
@@ -117,7 +106,7 @@ update action model =
 -- VIEW --
 ----------
 
-{-| Create the background as a div image.
+{-| Display the sprite background as a <div> background image.
 Note: <Signal.Address> input comes from the <StartApp Config.view> data type.
 -}
 view : Signal.Address Action -> Model -> Html

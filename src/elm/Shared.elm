@@ -1,11 +1,14 @@
-module Utilities where
+module Shared where
 
 import Effects exposing (Effects)
 
-{-| This module collects generic utility functions shared by other modules.
+{-| This module collects shared functions and data used in other modules.
 
 # Signals & Effects
 @docs noFx
+
+# Types
+@docs Frame
 -}
 
 
@@ -21,3 +24,16 @@ Source: Elm Effects documentation.
 noFx : a -> (a, Effects b)
 noFx model =
   (model, Effects.none)
+
+
+-----------
+-- TYPES --
+-----------
+
+{-| This data type captures the CSS class associated with the
+current animation frame.
+
+    Frame "icon-mm2-airman-arena1"
+-}
+type alias Frame =
+  String
