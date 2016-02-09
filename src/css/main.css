@@ -56,18 +56,29 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
 
+.rel {
+  position: relative;
+}
 
+.abs {
+  position: absolute;
+}
 
+/* This is the area where the sprites interact. */
+.active-area {
+  width: 561px;
+  height: 480px;
+}
 
-
-
-
-
-
-
-
-
+/* This is the position where the active area will be placed. */
+.active-pos {
+  top: 0px;
+  left: 37px;
+}
 
 
 /* ==========================================================================

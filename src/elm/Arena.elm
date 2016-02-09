@@ -122,14 +122,23 @@ Note: <Signal.Address> input comes from the <StartApp Config.view> data type.
 -}
 view : Signal.Address Action -> Model -> Html
 view address model =
-  div
+  div -- Parent container.
     [ classList
         [ ("icon", True)
         , (model.currentFrame, True)
+        , ("rel", True)
         ]
-    , title "Air Man Arena"
+    , title "Mega Air Man Arena"
     ]
-    []
+    [ div -- Active area container.
+      [ classList
+        [ ("abs", True)
+        , ("active-area", True)
+        , ("active-pos", True)
+        ]
+      ]
+      []
+    ]
 
 
 -------------

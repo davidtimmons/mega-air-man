@@ -31,6 +31,19 @@ needed according to the official <StartApp#2.0.2> documentation.
       , tasks : Signal (Task Never ()) -- Used in <tasks>.
       }
 -}
+{--
+app : StartApp.App Arena.Model
+app =
+  StartApp.start
+    { init = AirMan.init
+    , update = AirMan.update
+    , view = AirMan.view
+    -- <inputs> captures both vanilla Signals and external port data.
+    -- This is conceptually similar to passing down props in React.
+    , inputs = []
+    }
+--}
+{--}
 app : StartApp.App Arena.Model
 app =
   StartApp.start
@@ -43,6 +56,7 @@ app =
         [ Arena.playNextFrame
         ]
     }
+--}
 
 
 {-| <main> is the application entry point. It captures the current visual
