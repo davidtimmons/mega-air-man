@@ -10,6 +10,9 @@ import Html exposing (Html)
 import StartApp
 import Task exposing (Task)
 
+-- TEMP!!
+import Time
+
 {-| This module orchestrates the application. It initializes state, defines
 input signals to feed into the app, and opens ports that work with Tasks.
 
@@ -37,7 +40,9 @@ app =
     , update = Arena.update
     , view = Arena.view
     -- <inputs> captures both vanilla Signals and external port data.
-    , inputs = []
+    , inputs =
+        [ Arena.playNextFrame
+        ]
     }
 
 
