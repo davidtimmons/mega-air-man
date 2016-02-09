@@ -1,34 +1,40 @@
 module Arena
   ( Model
-  , Action(..)
   , init
   , update
   , view
   , playNextFrame
   ) where
 
+-- <MegaAirMan> Modules
+import Utilities
+
+-- Elm Modules
 import Effects exposing (Effects)
 import Html exposing (div, Html)
 import Html.Attributes exposing (classList, title)
 import Signal exposing (Signal)
 import Time
 
-{-|
+{-| This module displays and animates the Air Man arena background.
+
+# Model
+@docs Model, Frame, init
+
+# Update
+@docs Action, update
+
+# View
+@docs view
+
+# Signals
+@docs playNextFrame
 -}
 
 
 -----------
 -- MODEL --
 -----------
-
-{-| This data type captures the CSS class associated with the
-current animation frame.
-
-    Frame "icon-mm2-airman-arena1"
--}
-type alias Frame =
-  String
-
 
 {-| The model holds frame information associated with the background animation.
 -}
@@ -42,7 +48,16 @@ type alias Model =
   }
 
 
-{-|
+{-| This data type captures the CSS class associated with the
+current animation frame.
+
+    Frame "icon-mm2-airman-arena1"
+-}
+type alias Frame =
+  String
+
+
+{-| Set model defaults to include all animation frames in play order.
 -}
 init : (Model, Effects a)
 init =
@@ -62,24 +77,18 @@ init =
 -- UPDATE --
 ------------
 
-{-|
+{-| Trigger the next animation frame in the cycle with this Action.
 -}
-type Action
-  = NextFrame
+type Action =
+  NextFrame
 
 
-{-| Source: Elm Effects documentation.
--}
-noFx : a -> (a, Effects b)
-noFx model =
-  (model, Effects.none)
-
-
-{-|
+{-| Plays the background animation by changing the CSS classes that correspond
+to animation frames in the sprite sheet.
 -}
 update : Action -> Model -> (Model, Effects a)
 update action model =
-  noFx <|
+  Utilities.noFx <|
   case action of
     NextFrame ->
       let
@@ -108,8 +117,8 @@ update action model =
 -- VIEW --
 ----------
 
--- signal.address comes from the startapp config.view data type
-{-|
+{-| Create the background as a div image.
+Note: <Signal.Address> input comes from the <StartApp Config.view> data type.
 -}
 view : Signal.Address Action -> Model -> Html
 view address model =
@@ -127,7 +136,9 @@ view address model =
 -- SIGNALS --
 -------------
 
-{-|
+{-| Trigger the animation cycle. Prefer <Signal> to <Effects.tick> for this
+animation because the program simulates choppy NES animation rather than
+the duration-based approached possible with <Effects.tick>.
 -}
 playNextFrame : Signal Action
 playNextFrame =
