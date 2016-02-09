@@ -68,6 +68,10 @@ textarea {
   position: absolute;
 }
 
+.flip-x {
+  transform: scaleX(-1);
+}
+
 /* This is the area where the sprites interact. */
 .active-area {
   width: 561px;

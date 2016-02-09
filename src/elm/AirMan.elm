@@ -1,5 +1,6 @@
 module AirMan
   ( Model
+  , Action
   , init
   , update
   , view
@@ -199,6 +200,7 @@ view address model =
     [ classList
         [ ("icon", True)
         , (model.ani.currentFrame, True)
+        , ("flip-x", model.dir == Right)
         ]
     ]
     [ -- Tornado sprites.
