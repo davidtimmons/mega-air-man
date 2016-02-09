@@ -6,7 +6,9 @@
   "license": "BSD3",
   "author": "David Timmons (http://david.timmons.io/)",
   "scripts": {
-    "sprites": "sprity create tmp/ src/img/sprites/*.png --orientation 'binary-tree' --name 'sprites' --style 'sprites'"
+    "spriteFiles": "sprity create src/img src/img/sprites/*.png --orientation 'binary-tree' --margin 0 --name 'sprites' --style '../css/sprites'",
+    "spritePath": "sed --in-place 's/images/img/' src/css/sprites.css",
+    "makeSprites": "npm run spriteFiles && npm run spritePath"
   },
   "devDependencies": {
     "sprity": "^1.0.8"
