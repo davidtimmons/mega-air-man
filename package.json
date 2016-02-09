@@ -6,7 +6,7 @@
   "license": "BSD3",
   "author": "David Timmons (http://david.timmons.io/)",
   "scripts": {
-    "build": ""
+    "sprites": "sprity create tmp/ src/img/sprites/*.png --orientation 'binary-tree' --name 'sprites' --style 'sprites'"
   },
   "devDependencies": {
     "sprity": "^1.0.8"

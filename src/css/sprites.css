@@ -3,17 +3,17 @@
 }
 .icon-mm2-airman-arena1 {
   background-position: -0px -0px;
-  width: 647px;
+  width: 646px;
   height: 648px;
 }
 .icon-mm2-airman-arena2 {
-  background-position: -647px -0px;
-  width: 647px;
+  background-position: -646px -0px;
+  width: 646px;
   height: 648px;
 }
 .icon-mm2-airman-arena3 {
-  background-position: -1294px -0px;
-  width: 647px;
+  background-position: -1292px -0px;
+  width: 646px;
   height: 648px;
 }
 .icon-mm2-airman-jump {
@@ -181,13 +181,13 @@
   width: 27px;
   height: 11px;
 }
-.icon-mm2-ui-healthbar {
-  background-position: -0px -894px;
-  width: 27px;
-  height: 148px;
-}
 .icon-mm2-ui-health-megaman {
   background-position: -1043px -648px;
   width: 27px;
   height: 11px;
+}
+.icon-mm2-ui-healthbar {
+  background-position: -0px -894px;
+  width: 27px;
+  height: 148px;
 }
