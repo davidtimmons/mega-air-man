@@ -19,16 +19,13 @@ import Time exposing (Time)
 {-| This module displays and animates the Air Man arena background.
 
 # Model
-@docs Model, Frame, init
+@docs Model, AnimationState, init
 
 # Update
-@docs Action, update
+@docs Action, playRate, updateAnimationState, update
 
 # View
 @docs view
-
-# Signals
-@docs playNextFrame
 -}
 
 
@@ -154,25 +151,17 @@ update action model =
         newAni = updateAnimationState model.ani clockTime
 
         -- Update the Air Man sprite.
-        --(airman, airmanFx) = AirMan.update AirMan.NextFrame model.airman
+        (airman, airmanFx)
+          = AirMan.update (AirMan.NextFrame clockTime) model.airman
 
       in
-        -- Update the <Arena> model and and all sprites it controls.
-        ( Model newAni model.airman
-        , Effects.tick NextFrame
-        )
-      {--
-      let
-        (airman, airmanFx) = AirMan.update AirMan.NextFrame model.airman
-        newAni = updateAnimationState model.ani
-      in
+        -- Update the <Arena> model and and all sprite models it controls.
         ( Model newAni airman
         , Effects.batch
             [ Effects.map SpriteAirMan airmanFx
             , Effects.tick NextFrame
             ]
         )
-      --}
 
     SpriteAirMan act ->
       {- Wire together the <AirMan> and <Arena> modules. The specific update
@@ -183,7 +172,10 @@ update action model =
         (airman, airmanFx) = AirMan.update act model.airman
       in
         ( Model model.ani airman
-        , Effects.map SpriteAirMan airmanFx
+        , Effects.batch
+            [ Effects.map SpriteAirMan airmanFx
+            , Effects.tick NextFrame
+            ]
         )
 
 

@@ -64,10 +64,12 @@ type alias Model =
 {-| This model holds all animation state associated with the Air Man sprite.
 -}
 type alias AnimationState =
-  { currentFrameNumber : Int
+  { previousTime : Time
+  , elapsedTime : Time
   , currentFrame : Frame
   , stand : Frame
   , jump : Frame
+  , shootTotalFrames : Int
   , shootF1 : Frame
   , shootF2 : Frame
   , shootF3 : Frame
@@ -90,10 +92,12 @@ init : (Model, Effects a)
 init =
   Shared.noFx <|
   { ani =
-      { currentFrameNumber = 1
+      { previousTime = 0.0
+      , elapsedTime = 0.0
       , currentFrame = "icon-mm2-airman-stand"
       , stand = "icon-mm2-airman-stand"
       , jump = "icon-mm2-airman-jump"
+      , shootTotalFrames = 30 -- Cycle (F1 and F2) then play (F3).
       , shootF1 = "icon-mm2-airman-shoot1"
       , shootF2 = "icon-mm2-airman-shoot2"
       , shootF3 = "icon-mm2-airman-shoot3"
@@ -130,68 +134,83 @@ type alias DeltaTime
 -}
 type Action
   = HandleInput (DeltaTime, ArrowKeys)
-  | NextFrame
+  | NextFrame Time
   | Stand
   | Jump
   | Shoot
 
 
+{-| The cloud background animation plays at about 3.5 FPS.
+-}
+playRate : Time
+playRate =
+  100 * Time.millisecond
+
+
 {-| Updates state to cycle to the next animation frame.
 -}
-updateAnimationState : AnimationState -> Action -> AnimationState
-updateAnimationState ani action =
+updateAnimationState : AnimationState -> Action -> Time -> AnimationState
+updateAnimationState ani action clockTime =
   case action of
     Jump ->
-      { ani | currentFrameNumber = 1
-            , currentFrame = ani.jump
-      }
+      { ani | currentFrame = ani.jump }
 
     Shoot ->
       let
-        nextNumber = 1 + (ani.currentFrameNumber % 10)
-        nextFrame =
-          case nextNumber of
-            10 ->
-              ani.shootF3
+        -- Capture the total time this animation cycle has been playing.
+        duration = ani.elapsedTime + (clockTime - ani.previousTime)
 
-            _ ->
-              if
-                nextNumber % 2 == 0
-              then
-                ani.shootF2
-              else
-                ani.shootF1
+        -- Test whether the animation cycle has finished.
+        newElapsedTime =
+          if duration > (toFloat ani.shootTotalFrames) * playRate
+          then 0.0
+          else duration
+
+        -- Get the next frame in the cycle.
+        spin = toFloat ani.shootTotalFrames / 2
+
+        nextFrame =
+          if
+            duration < spin * playRate && not (ani.currentFrame == ani.shootF1)
+          then
+            ani.shootF1
+          else if
+            duration < spin * playRate && not (ani.currentFrame == ani.shootF2)
+          then
+            ani.shootF2
+          else
+            ani.shootF3
 
       in
-        { ani | currentFrameNumber = nextNumber
+        { ani | previousTime = clockTime
+              , elapsedTime = newElapsedTime
               , currentFrame = nextFrame
         }
 
     _ -> -- Default to the stand image.
-      { ani | currentFrameNumber = 1
-            , currentFrame = ani.stand
-      }
+      { ani | currentFrame = ani.stand }
 
 
-{-| Update the Air Man sprite model in response to Signal input.
+{-| Update the Air Man sprite model in response to Signals and Effects.
+The <NextFrame> action is initiated by <Arena>.
 -- TODO Incorporate direction, translate movements, shoot timing
 -}
 update : Action -> Model -> (Model, Effects a)
 update action model =
   Shared.noFx <|
   case action of
-    NextFrame ->
+    NextFrame clockTime ->
       -- TODO Testing
-      { model | ani = updateAnimationState model.ani Shoot }
+      { model | ani = updateAnimationState model.ani Shoot clockTime }
 
     Jump ->
-      { model | ani = updateAnimationState model.ani action }
+      { model | ani = updateAnimationState model.ani action 0.0 }
 
     Shoot ->
-      { model | ani = updateAnimationState model.ani action }
+      { model | ani = updateAnimationState model.ani action 0.0 }
 
     _ ->
-      { model | ani = updateAnimationState model.ani action }
+      { model | ani = updateAnimationState model.ani action 0.0 }
 
 
 ----------
