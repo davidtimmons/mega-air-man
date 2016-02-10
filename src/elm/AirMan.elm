@@ -10,10 +10,12 @@ module AirMan
 import Shared exposing (Frame)
 
 -- Elm Modules
+import Char
 import Effects exposing (Effects)
 import Html exposing (Html, div)
 import Html.Attributes exposing (classList, style)
 import Keyboard
+import Set exposing (Set)
 import Signal exposing (Signal)
 import Time exposing (Time)
 
@@ -69,6 +71,7 @@ type alias AnimationState =
   , stand : Frame
   , jump : Frame
   , shootTotalFrames : Int
+  , shootIsPlaying : Bool
   , shootF1 : Frame
   , shootF2 : Frame
   , shootF3 : Frame
@@ -97,6 +100,7 @@ init =
       , stand = "icon-mm2-airman-stand"
       , jump = "icon-mm2-airman-jump"
       , shootTotalFrames = 30 -- Cycle (F1 and F2) then play (F3).
+      , shootIsPlaying = False
       , shootF1 = "icon-mm2-airman-shoot1"
       , shootF2 = "icon-mm2-airman-shoot2"
       , shootF3 = "icon-mm2-airman-shoot3"
@@ -117,7 +121,7 @@ init =
 -}
 type Action
   = NextFrame Time
-  | HandleInput (Shared.DTime, Shared.ArrowKeys)
+  | HandleInput (Shared.DTime, Shared.ArrowKeys, Shared.Buttons)
   | Stand
   | Jump
   | Shoot
@@ -141,18 +145,21 @@ updateAnimationState ani action clockTime =
     Shoot ->
       let
         -- Capture the total time this animation cycle has been playing.
-        duration = ani.elapsedTime + (clockTime - ani.previousTime)
+        duration = max 0.0 (ani.elapsedTime + (clockTime - ani.previousTime))
 
         -- Test whether the animation cycle has finished.
         newElapsedTime =
-          if duration > (toFloat ani.shootTotalFrames) * playRate
-          then 0.0
-          else duration
+          if
+            duration > (toFloat ani.shootTotalFrames) * playRate
+          then
+            0.0
+          else
+            duration
 
         -- Get the next frame in the cycle.
         spin = toFloat ani.shootTotalFrames / 2
 
-        nextFrame =
+        nextShootFrame =
           if
             duration < spin * playRate && not (ani.currentFrame == ani.shootF1)
           then
@@ -164,10 +171,27 @@ updateAnimationState ani action clockTime =
           else
             ani.shootF3
 
+        isShooting =
+          if
+            newElapsedTime == 0.0 && nextShootFrame /= ani.shootF1
+          then
+            False
+          else
+            True
+
+        nextFrame =
+          if
+            isShooting == True
+          then
+            nextShootFrame
+          else
+            ani.stand
+
       in
         { ani | previousTime = clockTime
               , elapsedTime = newElapsedTime
               , currentFrame = nextFrame
+              , shootIsPlaying = isShooting
         }
 
     _ -> -- Default to the stand image.
@@ -178,31 +202,55 @@ updateAnimationState ani action clockTime =
 The <NextFrame> action is initiated by <Arena>.
 -- TODO Incorporate direction, translate movements, shoot timing
 -}
-update : Action -> Model -> (Model, Effects a)
+update : Action -> Model -> (Model, Effects Action)
 update action model =
   Shared.noFx <|
-  -- TODO Write cases
   case action of
     NextFrame clockTime ->
-      -- TODO Testing
-      --{ model | ani = updateAnimationState model.ani Shoot clockTime }
-      model
+      -- Play the shooting animation cycle.
+      if
+        model.ani.shootIsPlaying == True
+      then
+        { model | ani = updateAnimationState model.ani Shoot clockTime }
+      else
+        model
 
-    HandleInput (dTime, arrowKeys) ->
-      model
-        |> applyGravity dTime
-        |> setJump arrowKeys
-        |> setDirection arrowKeys
-        |> applyPhysics dTime
+    HandleInput (dTime, arrowKeys, buttons) ->
+      -- React to user keyboard input.
+      let
+        (didShoot, didJump) =
+          Set.foldl (\key (isBtn1, isBtn2) -> areButtons key (isBtn1, isBtn2))
+            (False, False) buttons
 
-    Jump ->
-      { model | ani = updateAnimationState model.ani action 0.0 }
-
-    Shoot ->
-      { model | ani = updateAnimationState model.ani action 0.0 }
+      in
+        if
+          model.ani.shootIsPlaying == True
+        then
+          model
+        else
+          model
+          |> applyGravity dTime
+          |> setShoot didShoot
+          |> setJump didJump
+          |> setDirection arrowKeys
+          |> applyPhysics dTime
 
     _ ->
-      { model | ani = updateAnimationState model.ani action 0.0 }
+      model
+
+
+{-| Determines if a keypress matches the desired button.
+-}
+isKeyButton : Char.KeyCode -> Char -> Bool
+isKeyButton key button =
+  Char.toLower (Char.fromCode key) == button
+
+
+{-| Determine if a keypress matches any desired button.
+-}
+areButtons : Char.KeyCode -> (Bool, Bool) -> (Bool, Bool)
+areButtons key (isBtn1, isBtn2) =
+  (isBtn1 || isKeyButton key 'a', isBtn2 || isKeyButton key 's')
 
 
 {-| Apply gravity if jumping.
@@ -222,13 +270,25 @@ applyGravity dTime model =
     { model | vy = newVy }
 
 
+{-| Play the shooting animation in response to the correct button press.
+-}
+setShoot : Bool -> Model -> Model
+setShoot didShoot model =
+  if
+    didShoot == True && model.ani.shootIsPlaying == False && model.vy == 0.0
+  then
+    { model | ani = updateAnimationState model.ani Shoot 0.0 }
+  else
+    model
+
+
 {-| Respond to a jump command riding on the input Signal. <vy> controls the
 vertical height Air Man will jump.
 -}
-setJump : Shared.ArrowKeys -> Model -> Model
-setJump arrowKeys model =
+setJump : Bool -> Model -> Model
+setJump didJump model =
   if
-    (arrowKeys.y > 0 && model.vy == 0.0)
+    didJump == True && model.vy == 0.0 && model.ani.shootIsPlaying == False
   then
     { model | vy = 7.4 }
   else

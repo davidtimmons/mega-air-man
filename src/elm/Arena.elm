@@ -97,7 +97,7 @@ a way to wire together the modules.
 -}
 type Action
   = NextFrame Time
-  | HandleInput (Shared.DTime, Shared.ArrowKeys)
+  | HandleInput (Shared.DTime, Shared.ArrowKeys, Shared.Buttons)
   | SpriteAirMan AirMan.Action
 
 
