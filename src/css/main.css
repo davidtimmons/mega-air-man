@@ -72,10 +72,6 @@ textarea {
   bottom: 0;
 }
 
-.flip-x {
-  transform: scaleX(-1);
-}
-
 .airman-shoot3-left {
   transform: translateX(-10px);
 }

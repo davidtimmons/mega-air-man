@@ -12,7 +12,7 @@ import Shared exposing (Frame)
 -- Elm Modules
 import Effects exposing (Effects)
 import Html exposing (Html, div)
-import Html.Attributes exposing (classList)
+import Html.Attributes exposing (classList, style)
 import Keyboard
 import Signal exposing (Signal)
 import Time exposing (Time)
@@ -209,51 +209,100 @@ update action model =
 -}
 applyGravity : Shared.DTime -> Model -> Model
 applyGravity dTime model =
-  { model | vy = if model.y > 0.0 then model.vy - dTime/4.0 else 0.0 }
+  let
+    newVy =
+      if
+        model.y > 0.0
+      then
+        model.vy - dTime/4.0
+      else
+        0.0
+
+  in
+    { model | vy = newVy }
 
 
-{-| Respond to a jump command riding on the input Signal.
+{-| Respond to a jump command riding on the input Signal. <vy> controls the
+vertical height Air Man will jump.
 -}
 setJump : Shared.ArrowKeys -> Model -> Model
 setJump arrowKeys model =
   if
     (arrowKeys.y > 0 && model.vy == 0.0)
   then
-    { model | vy = 6.0 }
+    { model | vy = 7.4 }
   else
     model
 
 
-{-| Respond to a movement command riding on the input Signal.
+{-| Respond to a movement command riding on the input Signal. <vx> controls
+how far Air Man moves or jumps along the x-axis.
 -}
 setDirection : Shared.ArrowKeys -> Model -> Model
 setDirection arrowKeys model =
-  { model | vx = toFloat arrowKeys.x
-          , dir = if
-                    arrowKeys.x < 0
-                  then
-                    Left
-                  else if
-                    arrowKeys.x > 0
-                  then
-                    Right
-                  else
-                    model.dir
-  }
+  let
+    newVx = 2.8 * toFloat arrowKeys.x
+
+    newDir =
+      if
+        arrowKeys.x < 0
+      then
+        Left
+      else if
+        arrowKeys.x > 0
+      then
+        Right
+      else
+        model.dir
+
+  in
+    { model | vx = newVx, dir = newDir }
 
 
 {-| Apply momentum to a moving sprite model.
 -}
 applyPhysics : Shared.DTime -> Model -> Model
 applyPhysics dTime model =
-  { model | x = model.x + dTime * model.vx
-          , y = max 0 (model.y + dTime * model.vy)
-  }
+  let
+    newY = max 0 (model.y + dTime * model.vy)
+
+    newX =
+      if
+        newY > 0
+      then
+        model.x + dTime * model.vx
+      else
+        model.x
+
+  in
+    { model | x = newX, y = newY }
 
 
 ----------
 -- VIEW --
 ----------
+
+{-| Move the sprite according to the model state values.
+-}
+transformStyles : Model -> List (String, String)
+transformStyles model =
+  let
+    flipX =
+      if
+        (model.ani.currentFrame /= model.ani.shootF3) && model.dir == Right
+      then
+        "scaleX(-1)"
+      else
+        ""
+
+  in
+    [ ( "transform"
+      , "translateX(" ++ toString model.x ++ "px) " ++
+        "translateY(-" ++ toString model.y ++ "px)" ++
+        flipX
+      )
+    ]
+
 
 {-| Display the Air Man sprite.
 -}
@@ -265,10 +314,6 @@ view address model =
         , ("btm", True)
         , ("icon", True)
         , (model.ani.currentFrame, True)
-        , ("flip-x"
-          , not (model.ani.currentFrame == model.ani.shootF3) &&
-            model.dir == Right
-          )
         , ("airman-shoot3-left"
           , model.ani.currentFrame == model.ani.shootF3 &&
             model.dir == Left
@@ -278,6 +323,7 @@ view address model =
             model.dir == Right
           )
         ]
+    , style (transformStyles model)
     ]
     [ -- Tornado sprites.
     ]
