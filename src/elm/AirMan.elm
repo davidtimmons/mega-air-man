@@ -4,6 +4,7 @@ module AirMan
   , init
   , update
   , view
+  , sampleKeyboardInput
   ) where
 
 -- <MegaAirMan> Modules
@@ -152,7 +153,7 @@ updateAnimationState ani action =
           case nextNumber of
             10 ->
               ani.shootF3
-              
+
             _ ->
               if
                 nextNumber % 2 == 0

@@ -3,7 +3,6 @@ module Arena
   , init
   , update
   , view
-  , playNextFrame
   ) where
 
 -- <MegaAirMan> Modules
@@ -15,7 +14,7 @@ import Effects exposing (Effects)
 import Html exposing (Html, div)
 import Html.Attributes exposing (classList, title)
 import Signal exposing (Signal)
-import Time
+import Time exposing (Time)
 
 {-| This module displays and animates the Air Man arena background.
 
@@ -48,7 +47,9 @@ type alias Model =
 {-| This model holds all animation state associated with the background sprite.
 -}
 type alias AnimationState =
-  { currentFrameNumber : Int
+  { previousTime : Time
+  , elapsedTime : Time
+  , totalFrames : Int
   , currentFrame : Frame
   , f1 : Frame
   , f2 : Frame
@@ -65,19 +66,23 @@ init : (Model, Effects Action)
 init =
   let
     (airmanModel, airmanFx) = AirMan.init
+
   in
     ( { ani =
-        { currentFrameNumber = 1
-        , currentFrame = "icon-mm2-airman-arena1"
-        , f1 = "icon-mm2-airman-arena1"
-        , f2 = "icon-mm2-airman-arena2"
-        , f3 = "icon-mm2-airman-arena3"
-        , f4 = "icon-mm2-airman-arena2"
-        }
+          { previousTime = 0.0
+          , elapsedTime = 0.0
+          , totalFrames = 4
+          , currentFrame = "icon-mm2-airman-arena1"
+          , f1 = "icon-mm2-airman-arena1"
+          , f2 = "icon-mm2-airman-arena2"
+          , f3 = "icon-mm2-airman-arena3"
+          , f4 = "icon-mm2-airman-arena2"
+          }
       , airman = airmanModel
       }
     , Effects.batch
         [ Effects.map SpriteAirMan airmanFx
+        , Effects.tick NextFrame -- This <Action> captures <Time>.
         ]
     )
 
@@ -93,32 +98,46 @@ and send the new model back to the <AirMan> module. In other words, this is
 a way to wire together the modules.
 -}
 type Action
-  = NextFrame
+  = NextFrame Time
   | SpriteAirMan AirMan.Action
+
+
+{-| The cloud background animation plays at about 3.5 FPS.
+-}
+playRate : Time
+playRate =
+  285 * Time.millisecond
 
 
 {-| Updates state to cycle to the next animation frame.
 -}
-updateAnimationState : AnimationState -> AnimationState
-updateAnimationState ani =
+updateAnimationState : AnimationState -> Time -> AnimationState
+updateAnimationState ani clockTime =
   let
-    nextNumber = 1 + (ani.currentFrameNumber % 4)
+    -- Capture the total time this animation cycle has been playing.
+    duration = ani.elapsedTime + (clockTime - ani.previousTime)
+
+    -- Test whether the animation cycle has finished.
+    newElapsedTime =
+      if duration > (toFloat ani.totalFrames) * playRate
+      then 0.0
+      else duration
+
+    -- Get the next frame in the cycle.
     nextFrame =
-      case nextNumber of
-        4 ->
-          ani.f4
-
-        3 ->
-          ani.f3
-
-        2 ->
-          ani.f2
-
-        _ ->
-          ani.f1
+      if duration < playRate
+      then ani.f1
+      else if duration < 2 * playRate
+      then ani.f2
+      else if duration < 3 * playRate
+      then ani.f3
+      else if duration < 4 * playRate
+      then ani.f4
+      else ani.f1
 
   in
-    { ani | currentFrameNumber = nextNumber
+    { ani | previousTime = clockTime
+          , elapsedTime = newElapsedTime
           , currentFrame = nextFrame
     }
 
@@ -129,14 +148,31 @@ to animation frames in the sprite sheet.
 update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
-    NextFrame ->
+    NextFrame clockTime ->
+      let
+        -- Update the cloud background sprite.
+        newAni = updateAnimationState model.ani clockTime
+
+        -- Update the Air Man sprite.
+        --(airman, airmanFx) = AirMan.update AirMan.NextFrame model.airman
+
+      in
+        -- Update the <Arena> model and and all sprites it controls.
+        ( Model newAni model.airman
+        , Effects.tick NextFrame
+        )
+      {--
       let
         (airman, airmanFx) = AirMan.update AirMan.NextFrame model.airman
         newAni = updateAnimationState model.ani
       in
         ( Model newAni airman
-        , Effects.map SpriteAirMan airmanFx
+        , Effects.batch
+            [ Effects.map SpriteAirMan airmanFx
+            , Effects.tick NextFrame
+            ]
         )
+      --}
 
     SpriteAirMan act ->
       {- Wire together the <AirMan> and <Arena> modules. The specific update
@@ -179,20 +215,3 @@ view address model =
       [ AirMan.view (Signal.forwardTo address SpriteAirMan) model.airman
       ]
     ]
-
-
--------------
--- SIGNALS --
--------------
-
-{-| Set the animation speed for all sprite animations. Animation speed:
-    Clouds       =  3.5 FPS
-    Air Man Spin = 10.0 FPS
-???
-Prefer <Signal> to <Effects.tick> because the program
-simulates choppy NES animation rather than the duration-based approached
-possible with <Effects.tick>.
--}
-playNextFrame : Signal Action
-playNextFrame =
-  Signal.map (\_ -> NextFrame) (Time.fps 10)

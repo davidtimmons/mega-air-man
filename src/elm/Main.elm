@@ -1,6 +1,7 @@
 module MegaAirMan (main) where
 
 -- <MegaAirMan> Modules
+import AirMan
 import Arena
 
 -- Elm Modules
@@ -41,8 +42,7 @@ app =
     -- This is conceptually similar to passing down props in React. However,
     -- all input must be of the same type.
     , inputs =
-        [ Arena.playNextFrame
-        --, Arena.sampleKeyboardInput
+        [ --AirMan.sampleKeyboardInput
         ]
     }
 --}
