@@ -259,7 +259,7 @@ setDirection arrowKeys model =
     { model | vx = newVx, dir = newDir }
 
 
-{-| Apply momentum to a moving sprite model.
+{-| Apply momentum to the moving sprite model. Air Man can only jump!
 -}
 applyPhysics : Shared.DTime -> Model -> Model
 applyPhysics dTime model =
@@ -270,9 +270,11 @@ applyPhysics dTime model =
       if
         newY > 0
       then
-        model.x + dTime * model.vx
+        -- Bound him to the right edge of the active area.
+        min 481 (model.x + dTime * model.vx)
       else
-        model.x
+        -- Bound him to the left edge of the active area.
+        max 0 model.x
 
   in
     { model | x = newX, y = newY }
@@ -287,21 +289,36 @@ applyPhysics dTime model =
 transformStyles : Model -> List (String, String)
 transformStyles model =
   let
-    flipX =
+    translateX =
+      if
+        model.x <= 0 && model.dir == Left
+      then
+        ""
+      else if
+        model.x <= 0 && model.dir == Right
+      then
+        "translateX(0px) "
+      else
+        "translateX(" ++ toString model.x ++ "px) "
+
+    translateY =
+      if
+        model.y <= 0
+      then
+        ""
+      else
+        "translateY(-" ++ toString model.y ++ "px) "
+
+    scaleX =
       if
         (model.ani.currentFrame /= model.ani.shootF3) && model.dir == Right
       then
-        "scaleX(-1)"
+        "scaleX(-1) "
       else
         ""
 
   in
-    [ ( "transform"
-      , "translateX(" ++ toString model.x ++ "px) " ++
-        "translateY(-" ++ toString model.y ++ "px)" ++
-        flipX
-      )
-    ]
+    [ ("transform", translateX ++ translateY ++ scaleX) ]
 
 
 {-| Display the Air Man sprite.
