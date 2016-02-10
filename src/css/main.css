@@ -76,6 +76,14 @@ textarea {
   transform: scaleX(-1);
 }
 
+.airman-shoot3-left {
+  transform: translateX(-10px);
+}
+
+.airman-shoot3-right {
+  transform: translateX(9px) scaleX(-1);
+}
+
 /* This is the area where the sprites interact. */
 .active-area {
   width: 561px;

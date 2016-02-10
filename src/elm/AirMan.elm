@@ -217,7 +217,7 @@ update action model =
 -- VIEW --
 ----------
 
-{-|
+{-| Display the Air Man sprite.
 -}
 view : Signal.Address Action -> Model -> Html
 view address model =
@@ -227,7 +227,18 @@ view address model =
         , ("btm", True)
         , ("icon", True)
         , (model.ani.currentFrame, True)
-        , ("flip-x", model.dir == Right)
+        , ("flip-x"
+          , not (model.ani.currentFrame == model.ani.shootF3) &&
+            model.dir == Right
+          )
+        , ("airman-shoot3-left"
+          , model.ani.currentFrame == model.ani.shootF3 &&
+            model.dir == Left
+          )
+        , ("airman-shoot3-right"
+          , model.ani.currentFrame == model.ani.shootF3 &&
+            model.dir == Right
+          )
         ]
     ]
     [ -- Tornado sprites.
