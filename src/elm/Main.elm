@@ -1,7 +1,6 @@
 module MegaAirMan (main) where
 
 -- <MegaAirMan> Modules
-import AirMan
 import Arena
 
 -- Elm Modules
@@ -39,9 +38,11 @@ app =
     , update = Arena.update
     , view = Arena.view
     -- <inputs> captures both vanilla Signals and external port data.
-    -- This is conceptually similar to passing down props in React.
+    -- This is conceptually similar to passing down props in React. However,
+    -- all input must be of the same type.
     , inputs =
         [ Arena.playNextFrame
+        --, Arena.sampleKeyboardInput
         ]
     }
 --}

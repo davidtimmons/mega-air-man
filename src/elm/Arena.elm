@@ -130,8 +130,13 @@ update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
     NextFrame ->
-      Shared.noFx
-      <| { model | ani = updateAnimationState model.ani }
+      let
+        (airman, airmanFx) = AirMan.update AirMan.NextFrame model.airman
+        newAni = updateAnimationState model.ani
+      in
+        ( Model newAni airman
+        , Effects.map SpriteAirMan airmanFx
+        )
 
     SpriteAirMan act ->
       {- Wire together the <AirMan> and <Arena> modules. The specific update
@@ -157,9 +162,9 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   div -- Parent container.
     [ classList
-        [ ("icon", True)
+        [ ("rel", True)
+        , ("icon", True)
         , (model.ani.currentFrame, True)
-        , ("rel", True)
         ]
     , title "Mega Air Man Arena"
     ]
@@ -170,7 +175,7 @@ view address model =
         , ("active-pos", True)
         ]
       ]
-      -- Send updates to <AirMan> and receive responses here at <SpriteAirMan>.
+      -- Send updates to <AirMan> and receive HTML here.
       [ AirMan.view (Signal.forwardTo address SpriteAirMan) model.airman
       ]
     ]
@@ -180,10 +185,14 @@ view address model =
 -- SIGNALS --
 -------------
 
-{-| Trigger the animation cycle. Prefer <Signal> to <Effects.tick> for this
-animation because the program simulates choppy NES animation rather than
-the duration-based approached possible with <Effects.tick>.
+{-| Set the animation speed for all sprite animations. Animation speed:
+    Clouds       =  3.5 FPS
+    Air Man Spin = 10.0 FPS
+???
+Prefer <Signal> to <Effects.tick> because the program
+simulates choppy NES animation rather than the duration-based approached
+possible with <Effects.tick>.
 -}
 playNextFrame : Signal Action
 playNextFrame =
-  Signal.map (\_ -> NextFrame) (Time.fps 3.5)
+  Signal.map (\_ -> NextFrame) (Time.fps 10)

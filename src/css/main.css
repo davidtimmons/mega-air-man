@@ -68,6 +68,10 @@ textarea {
   position: absolute;
 }
 
+.btm {
+  bottom: 0;
+}
+
 .flip-x {
   transform: scaleX(-1);
 }

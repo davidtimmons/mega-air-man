@@ -35,5 +35,5 @@ current animation frame.
 
     Frame "icon-mm2-airman-arena1"
 -}
-type alias Frame =
-  String
+type alias Frame
+  = String
