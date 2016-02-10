@@ -1,6 +1,6 @@
 module AirMan
   ( Model
-  , Action(HandleInput, NextFrame)
+  , Action(HandleInput)
   , init
   , update
   , view
@@ -149,43 +149,32 @@ updateAnimationState ani action clockTime =
 
         -- Test whether the animation cycle has finished.
         newElapsedTime =
-          if
-            duration > (toFloat ani.shootTotalFrames) * playRate
-          then
-            0.0
-          else
-            duration
+          if duration > (toFloat ani.shootTotalFrames) * playRate
+          then 0.0
+          else duration
 
-        -- Get the next frame in the cycle.
+        -- Set proportion of animation sequence needed for the spin sequence.
         spin = toFloat ani.shootTotalFrames / 2
 
+        -- Determine the next frame in the shooting sequence.
         nextShootFrame =
-          if
-            duration < spin * playRate && not (ani.currentFrame == ani.shootF1)
-          then
-            ani.shootF1
-          else if
-            duration < spin * playRate && not (ani.currentFrame == ani.shootF2)
-          then
-            ani.shootF2
-          else
-            ani.shootF3
+          if duration < spin * playRate && ani.currentFrame /= ani.shootF1
+          then ani.shootF1
+          else if duration < spin * playRate && ani.currentFrame /= ani.shootF2
+          then ani.shootF2
+          else ani.shootF3
 
+        -- End shooting sequence after it has finished playing.
         isShooting =
-          if
-            newElapsedTime == 0.0 && nextShootFrame /= ani.shootF1
-          then
-            False
-          else
-            True
+          if newElapsedTime == 0.0 && nextShootFrame == ani.shootF3
+          then False
+          else True
 
+        -- Determine the next sprite image.
         nextFrame =
-          if
-            isShooting == True
-          then
-            nextShootFrame
-          else
-            ani.stand
+          if isShooting
+          then nextShootFrame
+          else ani.stand
 
       in
         { ani | previousTime = clockTime
@@ -199,35 +188,31 @@ updateAnimationState ani action clockTime =
 
 
 {-| Update the Air Man sprite model in response to Signals and Effects.
-The <NextFrame> action is initiated by <Arena>.
--- TODO Incorporate direction, translate movements, shoot timing
 -}
 update : Action -> Model -> (Model, Effects Action)
 update action model =
-  Shared.noFx <|
   case action of
     NextFrame clockTime ->
-      -- Play the shooting animation cycle.
-      if
-        model.ani.shootIsPlaying == True
+      if -- Plays the shoot animation sequence.
+        model.ani.shootIsPlaying
       then
-        { model | ani = updateAnimationState model.ani Shoot clockTime }
+        ( { model | ani = updateAnimationState model.ani Shoot clockTime }
+        , Effects.tick NextFrame
+        )
       else
-        model
+        Shared.noFx model
 
     HandleInput (dTime, arrowKeys, buttons) ->
-      -- React to user keyboard input.
-      let
+      let -- React to user keyboard input if the shoot animation is not playing.
         (didShoot, didJump) =
           Set.foldl (\key (isBtn1, isBtn2) -> areButtons key (isBtn1, isBtn2))
             (False, False) buttons
 
       in
-        -- Only react to input if the shoot animation is not playing.
         if
-          model.ani.shootIsPlaying == True
+          model.ani.shootIsPlaying
         then
-          model
+          Shared.noFx model
         else
           model
           |> applyGravity dTime
@@ -235,9 +220,10 @@ update action model =
           |> setJump didJump
           |> setDirection arrowKeys
           |> applyPhysics dTime
+          |> Shared.startAnimation didShoot NextFrame
 
-    _ ->
-      model
+    _ -> -- Make no changes if the <Action> is unrecognized.
+      Shared.noFx model
 
 
 {-| Determines if a keypress matches the desired button.
@@ -275,7 +261,11 @@ setShoot didShoot model =
   if
     didShoot == True && model.ani.shootIsPlaying == False && model.vy == 0.0
   then
-    { model | ani = updateAnimationState model.ani Shoot 0.0 }
+    let
+      ani = model.ani
+      newAni = { ani | shootIsPlaying = True }
+    in
+      { model | ani = newAni }
   else
     model
 
@@ -304,16 +294,11 @@ setDirection arrowKeys model =
     newVx = 2.8 * toFloat arrowKeys.x
 
     newDir =
-      if
-        arrowKeys.x < 0
-      then
-        Left
-      else if
-        arrowKeys.x > 0
-      then
-        Right
-      else
-        model.dir
+      if arrowKeys.x < 0
+      then Left
+      else if arrowKeys.x > 0
+      then Right
+      else model.dir
 
   in
     { model | vx = newVx, dir = newDir }
@@ -327,14 +312,11 @@ applyPhysics dTime model =
     newY = max 0 (model.y + dTime * model.vy)
 
     newX =
-      if
-        newY > 0
-      then
-        -- Bound him to the right edge of the active area.
-        min 481 (model.x + dTime * model.vx)
-      else
-        -- Bound him to the left edge of the active area.
-        max 0 model.x
+      if newY > 0
+      -- Bound him to the right edge of the active area.
+      then min 481 (model.x + dTime * model.vx)
+      -- Bound him to the left edge of the active area.
+      else max 0 model.x
 
   in
     { model | x = newX, y = newY }
@@ -357,14 +339,40 @@ transformStyles model =
     jump = model.ani.jump
     jumpOffset =
       if isRight
-      then model.x - 12
-      else max 0 (model.x)
+      then model.x - 12.0
+      else max 0.0 (model.x)
+
+    -- Offset the shoot animation frames.
+    currentFrame = model.ani.currentFrame
+    shootF1 = model.ani.shootF1
+    shootF2 = model.ani.shootF2
+    shootF3 = model.ani.shootF3
+    isShooting =
+      currentFrame == shootF1 ||
+      currentFrame == shootF2 ||
+      currentFrame == shootF3
+    shootOffset =
+      if currentFrame == shootF1
+        then if isRight
+          then model.x - 10.0 -- Right offset.
+          else model.x +  0.0 -- Left offset.
+      else if currentFrame == shootF2
+        then if isRight
+          then model.x - 10.0 -- Right offset.
+          else model.x +  0.0 -- Left offset.
+      else
+        if isRight            -- currentFrame == shootF3
+          then model.x +  0.0 -- Right offset.
+          else model.x - 10.0 -- Left offset.
 
     -- Move the sprite along the x-axis.
     translateX =
       -- Align jumps.
-      if model.ani.currentFrame == jump
+      if currentFrame == jump
       then "translateX(" ++ toString jumpOffset ++ "px) "
+      -- Align shoot.
+      else if isShooting
+      then "translateX(" ++ toString shootOffset ++ "px) "
       -- Reduce wall clipping.
       else "translateX(" ++ toString (max 0 model.x) ++ "px) "
 
@@ -373,7 +381,7 @@ transformStyles model =
 
     -- Flip the sprite according to the direction it is facing.
     scaleX =
-      if (model.ani.currentFrame /= model.ani.shootF3) && isRight
+      if isRight
       then "scaleX(-1) "
       else ""
 
@@ -391,14 +399,6 @@ view address model =
         , ("btm", True)
         , ("icon", True)
         , (model.ani.currentFrame, True)
-        , ("airman-shoot3-left"
-          , model.ani.currentFrame == model.ani.shootF3 &&
-            model.dir == Left
-          )
-        , ("airman-shoot3-right"
-          , model.ani.currentFrame == model.ani.shootF3 &&
-            model.dir == Right
-          )
         ]
     , style (transformStyles model)
     ]

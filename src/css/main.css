@@ -56,6 +56,7 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+/* Used in development to assist sprite placement. */
 .overlay {
   background-color: rgba(0, 0, 0, 0.5);
 }
@@ -70,14 +71,6 @@ textarea {
 
 .btm {
   bottom: 0;
-}
-
-.airman-shoot3-left {
-  transform: translateX(-10px);
-}
-
-.airman-shoot3-right {
-  transform: translateX(9px) scaleX(-1);
 }
 
 /* This is the area where the sprites interact. */

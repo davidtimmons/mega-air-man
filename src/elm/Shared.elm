@@ -13,7 +13,7 @@ import Time exposing (Time)
 @docs Frame, ArrowKeys, DTime
 
 # Effects
-@docs noFx
+@docs noFx, startAnimation
 
 # Signals
 @docs sampleKeyboardInput
@@ -67,6 +67,13 @@ Source: Elm Effects documentation.
 noFx : a -> (a, Effects b)
 noFx model =
   (model, Effects.none)
+
+
+{-| Begin an animation sequence.
+-}
+startAnimation : Bool -> (Time -> a) -> b -> (b, Effects a)
+startAnimation shouldPlay action model =
+  ( model, Effects.tick action )
 
 
 -------------

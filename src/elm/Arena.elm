@@ -148,26 +148,14 @@ update : Action -> Model -> (Model, Effects Action)
 update action model =
   case action of
     NextFrame clockTime ->
-      let
-        -- Update the cloud background sprite.
+      let -- Update the cloud background sprite.
         newAni = updateAnimationState model.ani clockTime
 
-        -- Update the Air Man sprite.
-        (airman, airmanFx)
-          = AirMan.update (AirMan.NextFrame clockTime) model.airman
-
       in
-        -- Update the <Arena> model and and all sprite models it controls.
-        ( Model newAni airman
-        , Effects.batch
-            [ Effects.map SpriteAirMan airmanFx
-            , Effects.tick NextFrame
-            ]
-        )
+        ( Model newAni model.airman, Effects.tick NextFrame )
 
     HandleInput a ->
-      -- Pass input actions to the <AirMan> module.
-      let
+      let -- Pass input actions to the <AirMan> module.
         (airman, airmanFx) = AirMan.update (AirMan.HandleInput a) model.airman
 
       in
