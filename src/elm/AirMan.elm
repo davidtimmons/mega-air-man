@@ -223,6 +223,7 @@ update action model =
             (False, False) buttons
 
       in
+        -- Only react to input if the shoot animation is not playing.
         if
           model.ani.shootIsPlaying == True
         then
@@ -253,21 +254,18 @@ areButtons key (isBtn1, isBtn2) =
   (isBtn1 || isKeyButton key 'a', isBtn2 || isKeyButton key 's')
 
 
-{-| Apply gravity if jumping.
+{-| Apply gravity if jumping. Revert to the standing animation upon landing.
 -}
 applyGravity : Shared.DTime -> Model -> Model
 applyGravity dTime model =
-  let
-    newVy =
-      if
-        model.y > 0.0
-      then
-        model.vy - dTime/4.0
-      else
-        0.0
-
-  in
-    { model | vy = newVy }
+  if
+    model.y > 0.0
+  then
+    { model | vy = model.vy - dTime/4.0 }
+  else
+    { model | ani = updateAnimationState model.ani Stand 0.0
+            , vy = 0.0
+    }
 
 
 {-| Play the shooting animation in response to the correct button press.
@@ -290,7 +288,9 @@ setJump didJump model =
   if
     didJump == True && model.vy == 0.0 && model.ani.shootIsPlaying == False
   then
-    { model | vy = 7.4 }
+    { model | ani = updateAnimationState model.ani Jump 0.0
+            , vy = 7.4
+    }
   else
     model
 
@@ -344,38 +344,38 @@ applyPhysics dTime model =
 -- VIEW --
 ----------
 
-{-| Move the sprite according to the model state values.
+{-| Move the sprite according to the model state values. Adjust positions where
+needed to correctly line up the sprite animation.
 -}
 transformStyles : Model -> List (String, String)
 transformStyles model =
   let
+    -- Determine which way the sprite is facing.
+    isRight = model.dir == Right
+
+    -- Offset the jumping animation frame.
+    jump = model.ani.jump
+    jumpOffset =
+      if isRight
+      then model.x - 12
+      else max 0 (model.x)
+
+    -- Move the sprite along the x-axis.
     translateX =
-      if
-        model.x <= 0 && model.dir == Left
-      then
-        ""
-      else if
-        model.x <= 0 && model.dir == Right
-      then
-        "translateX(0px) "
-      else
-        "translateX(" ++ toString model.x ++ "px) "
+      -- Align jumps.
+      if model.ani.currentFrame == jump
+      then "translateX(" ++ toString jumpOffset ++ "px) "
+      -- Reduce wall clipping.
+      else "translateX(" ++ toString (max 0 model.x) ++ "px) "
 
-    translateY =
-      if
-        model.y <= 0
-      then
-        ""
-      else
-        "translateY(-" ++ toString model.y ++ "px) "
+    -- Move the sprite along the y-axis.
+    translateY = "translateY(-" ++ toString model.y ++ "px) "
 
+    -- Flip the sprite according to the direction it is facing.
     scaleX =
-      if
-        (model.ani.currentFrame /= model.ani.shootF3) && model.dir == Right
-      then
-        "scaleX(-1) "
-      else
-        ""
+      if (model.ani.currentFrame /= model.ani.shootF3) && isRight
+      then "scaleX(-1) "
+      else ""
 
   in
     [ ("transform", translateX ++ translateY ++ scaleX) ]
