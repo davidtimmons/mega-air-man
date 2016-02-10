@@ -3,6 +3,7 @@ module Arena
   , init
   , update
   , view
+  , sampleKeyboardInput
   ) where
 
 -- <MegaAirMan> Modules
@@ -96,6 +97,7 @@ a way to wire together the modules.
 -}
 type Action
   = NextFrame Time
+  | HandleInput (Shared.DTime, Shared.ArrowKeys)
   | SpriteAirMan AirMan.Action
 
 
@@ -163,6 +165,16 @@ update action model =
             ]
         )
 
+    HandleInput a ->
+      -- Pass input actions to the <AirMan> module.
+      let
+        (airman, airmanFx) = AirMan.update (AirMan.HandleInput a) model.airman
+
+      in
+        ( Model model.ani airman
+        , Effects.map SpriteAirMan airmanFx
+        )
+
     SpriteAirMan act ->
       {- Wire together the <AirMan> and <Arena> modules. The specific update
          actions are unimportant to the <Arena> module since <AirMan> has the
@@ -172,10 +184,7 @@ update action model =
         (airman, airmanFx) = AirMan.update act model.airman
       in
         ( Model model.ani airman
-        , Effects.batch
-            [ Effects.map SpriteAirMan airmanFx
-            , Effects.tick NextFrame
-            ]
+        , Effects.map SpriteAirMan airmanFx
         )
 
 
@@ -207,3 +216,14 @@ view address model =
       [ AirMan.view (Signal.forwardTo address SpriteAirMan) model.airman
       ]
     ]
+
+-------------
+-- SIGNALS --
+-------------
+
+{-| Samples keyboard input to determine elapsed time and key presses. Fed into
+<AirMan> in order to control the sprite.
+-}
+sampleKeyboardInput : Signal Action
+sampleKeyboardInput =
+  Shared.sampleKeyboardInput HandleInput
