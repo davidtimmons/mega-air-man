@@ -2,15 +2,23 @@
   "name": "mega-air-man",
   "version": "1.0.0",
   "private": true,
-  "description": "Fight as Air Man in this Mega Man game written in Elm.",
+  "description": "Fight as Air Man in this Mega Man game demo written in Elm.",
   "license": "BSD3",
   "author": "David Timmons (http://david.timmons.io/)",
   "scripts": {
-    "spriteFiles": "sprity create src/img src/img/sprites/*.png --orientation 'binary-tree' --margin 0 --name 'sprites' --style '../css/sprites'",
-    "spritePath": "sed --in-place 's/images/img/' src/css/sprites.css",
-    "makeSprites": "npm run spriteFiles && npm run spritePath"
+    "_spriteFiles": "sprity create src/img src/img/sprites/*.png --orientation 'binary-tree' --margin 0 --name 'sprites' --style '../css/sprites'",
+    "_spritePaths": "sed --in-place 's/images/img/' src/css/sprites.css",
+    "_makeDirectories": "mkdir --parents build/css build/img build/js/vendor",
+    "_copyFiles": "cp -pt build/ src/index.html && cp -pt build/css src/css/*.css && cp -pt build/img src/img/*.* && cp -prt build/ src/js/",
+    "_copyApp": "npm run _makeDirectories && npm run _copyFiles",
+    "_compileElm": "elm make src/elm/Main.elm --output build/js/elm.js --warn",
+    "_mangleElm": "uglifyjs --compress --mangle --screw-ie8 --output build/js/elm.js -- build/js/elm.js",
+    "_growAnElm": "npm run _compileElm && npm run _mangleElm",
+    "makeSprites": "npm run _spriteFiles && npm run _spritePaths",
+    "build": "npm run _copyApp && npm run _growAnElm"
   },
   "devDependencies": {
-    "sprity": "^1.0.8"
+    "sprity": "^1.0.8",
+    "uglify-js": "^2.6.1"
   }
 }

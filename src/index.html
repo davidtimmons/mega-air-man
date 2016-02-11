@@ -14,18 +14,18 @@
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 
         <!-- ELM FILES -->
-        <script src="/_reactor/debug.js"></script>
-        <script src="../elm.js"></script>
+        <script src="js/elm.js"></script>
     </head>
     <body>
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <!-- ELM APP (DEBUG MODE) -->
+        <!-- ELM APP -->
+        <div id="app"></div>
         <script type="text/javascript">
-          // Start Elm in debug mode:
-          var main = Elm.fullscreenDebug("MegaAirMan", "elm/Main.elm");
+          var app = document.getElementById('app');
+          Elm.embed(Elm.MegaAirMan, app);
         </script>
 
         <script src="js/plugins.js"></script>

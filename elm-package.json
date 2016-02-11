@@ -1,6 +1,6 @@
 {
     "version": "1.0.0",
-    "summary": "Fight as Air Man in this Mega Man game written in Elm.",
+    "summary": "Fight as Air Man in this Mega Man game demo written in Elm.",
     "repository": "https://github.com/davidtimmons/mega-air-man.git",
     "license": "BSD3",
     "source-directories": [
