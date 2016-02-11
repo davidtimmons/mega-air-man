@@ -27,6 +27,9 @@ import Time exposing (Time)
 
 # View
 @docs view
+
+# Signals (Used Here or Passed)
+@docs sampleKeyboardInput
 -}
 
 

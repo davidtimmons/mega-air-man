@@ -14,7 +14,6 @@ import Char
 import Effects exposing (Effects)
 import Html exposing (Html, div)
 import Html.Attributes exposing (classList, style)
-import Keyboard
 import Set exposing (Set)
 import Signal exposing (Signal)
 import Time exposing (Time)
@@ -23,13 +22,14 @@ import Time exposing (Time)
 sprite. <Arena> initializes <AirMan>.
 
 # Model
-@docs ...
+@docs Model, AnimationState, Direction, init
 
 # Update
-@docs ...
+@docs Action, playRate, updateAnimationState, update, isKeyButton, areButtons,
+applyGravity, setShoot, setShoot, setDirection, applyPhysics
 
 # view
-@docs ...
+@docs transformStyles, view
 -}
 
 
@@ -402,5 +402,5 @@ view address model =
         ]
     , style (transformStyles model)
     ]
-    [ -- Tornado sprites.
+    [ -- Tornado sprites can go here.
     ]

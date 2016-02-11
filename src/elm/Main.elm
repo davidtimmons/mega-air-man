@@ -30,7 +30,6 @@ needed according to the official <StartApp#2.0.2> documentation.
       , tasks : Signal (Task Never ()) -- Used in <tasks>.
       }
 -}
-{--}
 app : StartApp.App Arena.Model
 app =
   StartApp.start
@@ -43,7 +42,6 @@ app =
     , inputs =
         [ Arena.sampleKeyboardInput ]
     }
---}
 
 
 {-| <main> is the application entry point. It captures the current visual

@@ -10,7 +10,7 @@ import Time exposing (Time)
 {-| This module collects shared functions and data used in other modules.
 
 # Types
-@docs Frame, ArrowKeys, DTime
+@docs ArrowKeys, Buttons, DTime, Frame
 
 # Effects
 @docs noFx, startAnimation
