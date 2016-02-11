@@ -56,6 +56,10 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+a {
+  text-decoration: none;
+}
+
 /* Used in development to assist sprite placement. */
 .overlay {
   background-color: rgba(0, 0, 0, 0.5);
@@ -73,6 +77,41 @@ textarea {
   bottom: 0;
 }
 
+.m1 {
+  margin: 1px;
+}
+
+.m5 {
+  margin: 5px;
+}
+
+.mb10 {
+  margin-bottom: 10px;
+}
+
+.red {
+  color: rgb(236, 82, 82);
+}
+
+.white {
+  color: #fff;
+}
+
+.blue {
+  color: #6060d2;
+}
+
+.label {
+  color: #777;
+  font-family: unicode;
+  font-size: 0.75em;
+  vertical-align: middle;
+}
+
+.label b {
+  color: rgb(180, 180, 180);
+}
+
 .tile {
   background-image: url('../img/dark_wall.png');
 }
@@ -88,6 +127,10 @@ textarea {
 .center {
   margin-left: auto;
   margin-right: auto;
+}
+
+.center-text {
+  text-align: center;
 }
 
 .game-width {
