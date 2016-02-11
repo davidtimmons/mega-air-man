@@ -65,8 +65,8 @@ type alias Model =
 {-| This model holds all animation state associated with the Air Man sprite.
 -}
 type alias AnimationState =
-  { previousTime : Time
-  , elapsedTime : Time
+  { startTime : Time
+  , duration : Time
   , currentFrame : Frame
   , stand : Frame
   , jump : Frame
@@ -94,8 +94,8 @@ init : (Model, Effects a)
 init =
   Shared.noFx <|
   { ani =
-      { previousTime = 0.0
-      , elapsedTime = 0.0
+      { startTime = 0.0
+      , duration = playRate * 30 -- Matches <shootTotalFrames>.
       , currentFrame = "icon-mm2-airman-stand"
       , stand = "icon-mm2-airman-stand"
       , jump = "icon-mm2-airman-jump"
@@ -144,41 +144,41 @@ updateAnimationState ani action clockTime =
 
     Shoot ->
       let
-        -- Capture the total time this animation cycle has been playing.
-        duration = max 0.0 (ani.elapsedTime + (clockTime - ani.previousTime))
-
-        -- Test whether the animation cycle has finished.
-        newElapsedTime =
-          if duration > (toFloat ani.shootTotalFrames) * playRate
-          then 0.0
-          else duration
-
-        -- Set proportion of animation sequence needed for the spin sequence.
-        spin = toFloat ani.shootTotalFrames / 2
-
-        -- Determine the next frame in the shooting sequence.
-        nextShootFrame =
-          if duration < spin * playRate && ani.currentFrame /= ani.shootF1
-          then ani.shootF1
-          else if duration < spin * playRate && ani.currentFrame /= ani.shootF2
-          then ani.shootF2
-          else ani.shootF3
+        -- Determine when the animation started.
+        startTime =
+          if ani.startTime > 0
+          then ani.startTime
+          else clockTime
 
         -- End shooting sequence after it has finished playing.
         isShooting =
-          if newElapsedTime == 0.0 && nextShootFrame == ani.shootF3
-          then False
-          else True
+          if ani.shootIsPlaying == True
+             && clockTime < startTime + ani.duration
+          then True
+          else False
 
-        -- Determine the next sprite image.
-        nextFrame =
+        nextStartTime =
           if isShooting
-          then nextShootFrame
-          else ani.stand
+          then startTime
+          else 0.0
+
+        -- Set proportion of animation sequence needed for the spin sequence.
+        spinDuration = playRate * toFloat ani.shootTotalFrames / 2
+
+        -- Find the next frame in the shooting sequence.
+        nextFrame =
+          if isShooting == False
+          then ani.stand
+          else
+            if clockTime < startTime + spinDuration
+            then
+              if ani.currentFrame /= ani.shootF1
+              then ani.shootF1
+              else ani.shootF2
+            else ani.shootF3
 
       in
-        { ani | previousTime = clockTime
-              , elapsedTime = newElapsedTime
+        { ani | startTime = nextStartTime
               , currentFrame = nextFrame
               , shootIsPlaying = isShooting
         }
@@ -209,7 +209,7 @@ update action model =
             (False, False) buttons
 
       in
-        if
+        if -- This "if test" is CRITICAL for the sprite to behave!
           model.ani.shootIsPlaying
         then
           Shared.noFx model
@@ -223,7 +223,7 @@ update action model =
           |> Shared.maybeTick didShoot NextFrame
 
     _ -> -- Make no changes if the <Action> is unrecognized.
-      Shared.noFx model
+      Shared.maybeTick model.ani.shootIsPlaying NextFrame model
 
 
 {-| Determines if a keypress matches the desired button.
@@ -292,7 +292,6 @@ setDirection : Shared.ArrowKeys -> Model -> Model
 setDirection arrowKeys model =
   let
     newVx = 2.8 * toFloat arrowKeys.x
-
     newDir =
       if arrowKeys.x < 0
       then Left
@@ -310,7 +309,6 @@ applyPhysics : Shared.DTime -> Model -> Model
 applyPhysics dTime model =
   let
     newY = max 0 (model.y + dTime * model.vy)
-
     newX =
       if newY > 0
       -- Bound him to the right edge of the active area.
@@ -338,7 +336,7 @@ transformStyles model =
     -- Offset the jumping animation frame.
     jump = model.ani.jump
     jumpOffset =
-      if isRight
+      if isRight == True
       then model.x - 12.0
       else max 0.0 (model.x)
 
@@ -348,20 +346,20 @@ transformStyles model =
     shootF2 = model.ani.shootF2
     shootF3 = model.ani.shootF3
     isShooting =
-      currentFrame == shootF1 ||
-      currentFrame == shootF2 ||
-      currentFrame == shootF3
+      currentFrame == shootF1
+      || currentFrame == shootF2
+      || currentFrame == shootF3
     shootOffset =
       if currentFrame == shootF1
-        then if isRight
+        then if isRight == True
           then model.x - 10.0 -- Right offset.
           else model.x +  0.0 -- Left offset.
       else if currentFrame == shootF2
-        then if isRight
+        then if isRight == True
           then model.x - 10.0 -- Right offset.
           else model.x +  0.0 -- Left offset.
       else
-        if isRight            -- currentFrame == shootF3
+        if isRight == True    -- currentFrame == shootF3
           then model.x +  0.0 -- Right offset.
           else model.x - 10.0 -- Left offset.
 
@@ -370,18 +368,19 @@ transformStyles model =
       -- Align jumps.
       if currentFrame == jump
       then "translateX(" ++ toString jumpOffset ++ "px) "
-      -- Align shoot.
-      else if isShooting
-      then "translateX(" ++ toString shootOffset ++ "px) "
-      -- Reduce wall clipping.
-      else "translateX(" ++ toString (max 0 model.x) ++ "px) "
+      else
+        -- Align shoot.
+        if isShooting == True
+        then "translateX(" ++ toString shootOffset ++ "px) "
+        -- Reduce wall clipping.
+        else "translateX(" ++ toString (max 0 model.x) ++ "px) "
 
     -- Move the sprite along the y-axis.
     translateY = "translateY(-" ++ toString model.y ++ "px) "
 
     -- Flip the sprite according to the direction it is facing.
     scaleX =
-      if isRight
+      if isRight == True
       then "scaleX(-1) "
       else ""
 
