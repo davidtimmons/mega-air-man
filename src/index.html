@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="css/sprites.css">
 
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+        <script src="js/vendor/midi.js"></script>
 
         <!-- ELM FILES -->
         <script src="js/elm.js"></script>
@@ -24,8 +25,12 @@
         <!-- ELM APP -->
         <div id="app" class="game-width game-frame center shadow"></div>
         <script type="text/javascript">
+          // Grow an Elm!
           var app = document.getElementById('app');
           Elm.embed(Elm.MegaAirMan, app);
+
+          // Start the background music!
+          MIDIjs.play('sfx/mm2-robotmaster.mid');
         </script>
 
         <script src="js/plugins.js"></script>

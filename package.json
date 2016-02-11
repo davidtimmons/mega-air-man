@@ -8,8 +8,8 @@
   "scripts": {
     "_spriteFiles": "sprity create src/img src/img/sprites/*.png --orientation 'binary-tree' --margin 0 --name 'sprites' --style '../css/sprites'",
     "_spritePaths": "sed --in-place 's/images/img/' src/css/sprites.css",
-    "_makeDirectories": "mkdir --parents build/css build/img build/js/vendor",
-    "_copyFiles": "cp -pt build/ src/index.html && cp -pt build/css src/css/*.css && cp -pt build/img src/img/*.* && cp -prt build/ src/js/",
+    "_makeDirectories": "mkdir --parents build/css build/img build/sfx build/js/vendor",
+    "_copyFiles": "cp -pt build/ src/index.html && cp -pt build/css src/css/*.css && cp -pt build/img src/img/*.* && cp -pt build/sfx src/sfx/*.* && cp -prt build/ src/js/",
     "_copyApp": "npm run _makeDirectories && npm run _copyFiles",
     "_compileElm": "elm make src/elm/Main.elm --output build/js/elm.js --warn",
     "_mangleElm": "uglifyjs --compress --mangle --screw-ie8 --output build/js/elm.js -- build/js/elm.js",

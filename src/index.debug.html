@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="css/sprites.css">
 
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+        <script src="js/vendor/midi.js"></script>
 
         <!-- ELM FILES -->
         <script src="/_reactor/debug.js"></script>
@@ -26,6 +27,9 @@
         <script type="text/javascript">
           // Start Elm in debug mode:
           var main = Elm.fullscreenDebug("MegaAirMan", "elm/Main.elm");
+
+          // Start the background music!
+          MIDIjs.play('sfx/mm2-robotmaster.mid');
         </script>
 
         <script src="js/plugins.js"></script>
