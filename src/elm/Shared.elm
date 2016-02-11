@@ -13,7 +13,7 @@ import Time exposing (Time)
 @docs ArrowKeys, Buttons, DTime, Frame
 
 # Effects
-@docs noFx, startAnimation
+@docs noFx, maybeTick
 
 # Signals
 @docs sampleKeyboardInput
@@ -71,9 +71,11 @@ noFx model =
 
 {-| Begin an animation sequence.
 -}
-startAnimation : Bool -> (Time -> a) -> b -> (b, Effects a)
-startAnimation shouldPlay action model =
-  ( model, Effects.tick action )
+maybeTick : Bool -> (Time -> a) -> b -> (b, Effects a)
+maybeTick shouldPlay action model =
+  if shouldPlay == True
+  then ( model, Effects.tick action )
+  else noFx model
 
 
 -------------

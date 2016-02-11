@@ -220,7 +220,7 @@ update action model =
           |> setJump didJump
           |> setDirection arrowKeys
           |> applyPhysics dTime
-          |> Shared.startAnimation didShoot NextFrame
+          |> Shared.maybeTick didShoot NextFrame
 
     _ -> -- Make no changes if the <Action> is unrecognized.
       Shared.noFx model
