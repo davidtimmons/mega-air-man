@@ -12,7 +12,6 @@
         <link rel="stylesheet" href="css/sprites.css">
 
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
-        <script src="js/vendor/midi.js"></script>
 
         <!-- ELM FILES -->
         <script src="js/elm.js"></script>
@@ -31,9 +30,10 @@
             &#8592; &#8594; <span class="label">: move</span>
           </p>
           <p class="m1 label">
-            (<b>Author:</b> <a class="blue" title="Visit my website!" href="http://david.timmons.io/">David Timmons</a>,
+            <b>Author:</b> <a class="blue" title="Visit my website!" href="http://david.timmons.io/">David Timmons</a>,
             <b>License:</b> BSD3<br />
-            (<b>Note:</b> Mega Man and Air Man are &#169; Capcom Co, Ltd. All Rights reserved.)
+            (<b>Note 1:</b> Mega Man stole Air Man's tornado gun, so, uh, sorry about that. Blame the Blue Bomber!)
+            (<b>Note 2:</b> Mega Man and Air Man are &#169; Capcom Co, Ltd. All Rights reserved.)
           </p>
         </div>
 
@@ -43,10 +43,14 @@
           // Grow an Elm!
           var app = document.getElementById('app');
           Elm.embed(Elm.MegaAirMan, app);
-
-          // Start the background music!
-          MIDIjs.play('sfx/mm2-robotmaster.mid');
         </script>
+
+        <!-- BG MUSIC -->
+        <div class="center center-text game-width">
+          <audio src="sfx/mm2-robotmaster16.mp3" type="audio/mpeg" autoplay="autoplay" controls="controls" loop>
+            Your browser does not support audio!
+          </audio>
+        </div>
 
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>

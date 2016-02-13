@@ -12,7 +12,6 @@
         <link rel="stylesheet" href="css/sprites.css">
 
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
-        <script src="js/vendor/midi.js"></script>
 
         <!-- ELM FILES -->
         <script src="/_reactor/debug.js"></script>
@@ -23,28 +22,10 @@
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <div class="m5 mb10 center center-text white game-width">
-          <h1 class="m1">Mega Air Man!</h1>
-          <p class="m1 mb10 red">
-            <b>Controls:</b> &nbsp;
-            a <span class="label">: attack</span> &nbsp;
-            s <span class="label">: jump</span> &nbsp;
-            &#8592; &#8594; <span class="label">: move</span>
-          </p>
-          <p class="m1 label">
-            <b>Author:</b> <a class="blue" title="Visit my website!" href="http://david.timmons.io/">David Timmons</a>,
-            <b>License:</b> BSD3<br />
-            (<b>Note:</b> Mega Man and Air Man are &#169; Capcom Co, Ltd. All Rights reserved.)
-          </p>
-        </div>
-
         <!-- ELM APP (DEBUG MODE) -->
         <script type="text/javascript">
           // Start Elm in debug mode:
           var main = Elm.fullscreenDebug("MegaAirMan", "elm/Main.elm");
-
-          // Start the background music!
-          MIDIjs.play('sfx/mm2-robotmaster.mid');
         </script>
 
         <script src="js/plugins.js"></script>

@@ -60,6 +60,11 @@ a {
   text-decoration: none;
 }
 
+audio {
+  margin: 5px auto;
+  width: 300px;
+}
+
 /* Used in development to assist sprite placement. */
 .overlay {
   background-color: rgba(0, 0, 0, 0.5);
