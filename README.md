@@ -26,3 +26,5 @@ See the demo [**here**](http://mega-air-man.timmons.io "Play the Mega Air Man de
 * [-ShyGuy-](http://www.spriters-resource.com/submitter/-ShyGuy-/ "See -ShyGuy-'s projects.'") for the Air Man sprites.
 * [Random Talking Bush](http://spritedatabase.net/contributor/396 "See Random Talking Bush's projects.'") for the Air Man stage graphics.
 * Capcom for this classic Nintendo game!
+
+_Mega Man and Air Man are &#169; Capcom Co, Ltd. All Rights reserved._
