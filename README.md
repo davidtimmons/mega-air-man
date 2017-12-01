@@ -19,7 +19,7 @@ _Mega Air Man_ is a game demo written in _Elm_ and based on the NES classic _Meg
 
 ## Demo
 
-See the demo [**here**](http://mega-air-man.timmons.io "Play the Mega Air Man demo.")!
+See the demo [**here**](http://david.timmons.io/demos/mega-air-man/ "Play the Mega Air Man demo.")!
 
 ## Special Thanks
 
